@@ -3,14 +3,32 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.views import APIView
-
-
-# Create your views here.
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
 
 from django.http import JsonResponse
 from rest_framework import serializers
 
 from .models import Product
+
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+ 
+        # Add custom claims
+        token['username'] = user.username
+        # ...
+ 
+        return token
+ 
+ 
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
+
 
 
 
@@ -63,6 +81,7 @@ class APIViews(APIView):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def getproducts(req,id=-1):
     if req.method =='GET':
         if id > -1:
@@ -78,6 +97,7 @@ def getproducts(req,id=-1):
     
     
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def addproducts(req):
     if req.method =='POST':
         tsk_serializer = ProductSerializer(data=req.data)
@@ -91,6 +111,7 @@ def addproducts(req):
 
 
 @api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
 def delproducts(req,id=-1):
     if req.method =='DELETE':
         try:
@@ -104,6 +125,7 @@ def delproducts(req,id=-1):
 
 
 @api_view(['PUT'])
+@permission_classes([IsAuthenticated])
 def updproducts(req, id=-1):
     if req.method == 'PUT':
         try:

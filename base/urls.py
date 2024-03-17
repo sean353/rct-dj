@@ -27,7 +27,8 @@ urlpatterns = [
     path('delproducts/<int:id>', views.delproducts),
     path('updproducts/<int:id>', views.updproducts),
     path('get_all_images', views.getImages),
-    path('upload_image/',views.APIViews.as_view())
+    path('upload_image/',views.APIViews.as_view()),
+    path('login/', views.MyTokenObtainPairView.as_view())
 
 
 
